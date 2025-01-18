@@ -69,20 +69,17 @@ class Radio(RadioListener):
         while not self.stop_event.is_set():
             try:
                 # Check if the send buffer size exceeds 1000 bytes
-                logging.info("111")
                 if self.command_queue.qsize() > 1000:
                     raise Exception(
                         "Send buffer overflow: more than 1000 bytes in the queue"
                     )
 
                 # Get the next command from the queue
-                logging.info("222")
                 command = self.command_queue.get()
                 logging.info(f"Sending: {command}")
                 # Encode the command string to bytes before sending to the serial port
                 self.serial_port.write(command.encode())  # Set timeout to 500ms
                 # Wait for the specified delay before sending the next command
-                logging.info("333")
                 time.sleep(self.command_delay)
                 # Mark the command as done
                 self.command_queue.task_done()

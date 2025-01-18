@@ -19,18 +19,24 @@ class RadioGUI:
         self.root.geometry("400x300")  # Set the window size to fit the controls
 
         self.com_port_label = tk.Label(root, text="COM Port:")
-        self.com_port_label.grid(row=0, column=0)
+        self.com_port_label.grid(row=1, column=0)
         self.com_port_selector = ttk.Combobox(root, values=self.get_serial_ports())
-        self.com_port_selector.grid(row=0, column=1)
+        self.com_port_selector.grid(row=1, column=1)
         self.com_port_selector.current(0)  # Set the first port as default
 
         self.baudrate_label = tk.Label(root, text="Baudrate:")
-        self.baudrate_label.grid(row=1, column=0)
+        self.baudrate_label.grid(row=2, column=0)
         self.baudrate_selector = ttk.Combobox(
             root, values=[9600, 19200, 38400, 57600, 115200]
         )
-        self.baudrate_selector.grid(row=1, column=1)
+        self.baudrate_selector.grid(row=2, column=1)
         self.baudrate_selector.current(2)  # Set 38400 as default
+
+        self.txpower_label = tk.Label(root, text="Transmit Power (W):")
+        self.txpower_label.grid(row=0, column=0)
+        self.txpower_entry = tk.Entry(root)
+        self.txpower_entry.grid(row=0, column=1)
+        self.txpower_entry.insert(0, "10")  # Set default value to 5 watts
 
         self.swr_meter_label = tk.Label(root, text="SWR Meter:")
         self.swr_meter_label.grid(row=6, column=0)
@@ -99,10 +105,11 @@ class RadioGUI:
                 # Store the current mode and tx power
                 self.original_mode = self.radio.get_mode(blocking=True)
                 self.original_txpower = self.radio.get_txpower(blocking=True)
-                # Set the mode to FM and tx power to 5 watts
+                # Set the mode to FM and tx power to the entered value
                 self.radio.set_mode("FM")
-                self.radio.set_txpower(5)
-                while self.radio.get_txpower(blocking=True) != 5:
+                selected_txpower = int(self.txpower_entry.get())
+                self.radio.set_txpower(selected_txpower)
+                while self.radio.get_txpower(blocking=True) != selected_txpower:
                     pass
                 # Start transmitting
                 self.radio.set_transmit(True)
